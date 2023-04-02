@@ -6,20 +6,35 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
   const recipeName: any = useRef()
   const instructions: any = useRef()
 
-  const createRecipeHandler = (e: any) => {
-    e.preventDefault()
-
-    const newRecipe = {
-      name: recipeName.current.value,
-      ingredients,
-      instructions: instructions.current.value,
-    }
-
-    setRecipies((prev: any) => [...prev, newRecipe])
-    console.log(recipies)
+  const createRecipeHandler = () => {
+    setRecipies((prev: any) => {
+      return [
+        ...prev,
+        {
+          id: prev.length,
+          name: recipeName.current.value,
+          ingredients,
+          instructions: instructions.current.value,
+        },
+      ]
+    })
   }
 
-  const removeIngredient = (e: any) => {}
+  const removeIngredient = (e: any) => {
+    console.log(ingredients)
+    setIngredients((prev: any) => {
+      if (prev.length === 1) {
+        console.log("single")
+        return []
+      } else if (prev.length > 1) {
+        return [
+          ...prev.filter(
+            (i: any, key: number) => key !== e.target.dataset.id * 1
+          ),
+        ]
+      }
+    })
+  }
 
   return (
     <div className='bg-primary text-primary-content flex flex-col p-2 max-w-md rounded-xl w-1/2'>
@@ -54,23 +69,29 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
             <h3 className='text-lg font-bold mb-2'>Ingredients</h3>
             <IngredientInput setIngredients={setIngredients} />
 
-            <section className='h-10 mt-5'>
+            <section className='h-52 mt-5 flex p-2 bg-base-300 rounded-lg flex-col gap-4 overflow-auto'>
               {ingredients.length === 0 && (
-                <p className='opacity-90'>No ingredients added...</p>
+                <p className='text-base-content'>No ingredients added...</p>
               )}
 
               {ingredients.length > 0 &&
                 ingredients.map((i: any, key: number) => {
                   return (
-                    <div key={key} className='badge w-fit p-4 flex gap-4'>
-                      {i.name}
-
+                    <div
+                      key={key}
+                      className='w-full bg-base-100 text-base-content rounded-lg p-4 flex justify-between items-center gap-4 h-fit shadow-lg'>
+                      <div>
+                        <p>
+                          {i.name} - {i.amount} {i.unit}
+                        </p>
+                      </div>
                       <button
+                        data-id={key}
                         onClick={removeIngredient}
                         className='btn btn-circle btn-xs'>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
-                          className='h-6 w-6'
+                          className='h-6 w-6 pointer-events-none'
                           fill='none'
                           viewBox='0 0 24 24'
                           stroke='currentColor'>
@@ -94,7 +115,7 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
             <div className='form-control'>
               <textarea
                 ref={instructions}
-                className='textarea textarea-bordered h-24 resize-none overflow-auto text-neutral'
+                className='textarea textarea-bordered h-56 resize-none overflow-auto text-neutral'
                 placeholder='Cooking Instructions'></textarea>
             </div>
           </div>
@@ -115,15 +136,19 @@ const IngredientInput = ({ setIngredients }: any) => {
   const ingredientAmount: any = useRef()
   const ingredientUnit: any = useRef()
 
-  const createIngredient = () =>
-    setIngredients((prev: any) => [
-      ...prev,
-      {
-        name: ingredientName.current.value,
-        amount: ingredientAmount.current.value,
-        unit: ingredientUnit.current.value,
-      },
-    ])
+  const createIngredient = async () => {
+    setIngredients((prev: any) => {
+      return [
+        ...prev,
+        {
+          id: prev.length,
+          name: ingredientName.current.value,
+          amount: ingredientAmount.current.value,
+          unit: ingredientUnit.current.value,
+        },
+      ]
+    })
+  }
 
   return (
     <div className='bg-base-300 rounded-lg flex text-neutral w-full'>
@@ -151,8 +176,7 @@ const IngredientInput = ({ setIngredients }: any) => {
           <select
             defaultValue={"unit"}
             className='select select-xs w-full'
-            ref={ingredientUnit}
-            onChange={(event) => {}}>
+            ref={ingredientUnit}>
             <option value={"unit"} disabled>
               Unit
             </option>
@@ -166,7 +190,12 @@ const IngredientInput = ({ setIngredients }: any) => {
       </section>
 
       <button
-        onClick={createIngredient}
+        onClick={async () => {
+          await createIngredient()
+          ingredientName.current.value = null
+          ingredientAmount.current.value = null
+          ingredientUnit.current.value = "unit"
+        }}
         type='button'
         className='btn-success w-10 rounded-r-md text-xl hover:bg-[#32C18C]'>
         +

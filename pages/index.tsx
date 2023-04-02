@@ -1,22 +1,11 @@
 import CreateRecipeForm from "@/components/CreateRecipeForm"
 import Head from "next/head"
-import { useState } from "react"
-
-const myRecipe = {
-  name: "pizza",
-  ingredients: [
-    {
-      name: "cheese",
-      amount: 2,
-      unit: "kg",
-    },
-  ],
-  instructions: "",
-}
+import { useEffect, useState } from "react"
 
 export default function Home() {
   const [recipies, setRecipies]: any = useState([
     {
+      id: 0,
       name: "pizza",
       ingredients: [
         {
@@ -28,6 +17,13 @@ export default function Home() {
       instructions: "",
     },
   ])
+
+  useEffect(() => {
+    console.log(recipies)
+    recipies.forEach((r) => {
+      // console.log(r.instructions.split('\n'))
+    })
+  }, [recipies])
 
   return (
     <>
