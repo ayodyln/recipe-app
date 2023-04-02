@@ -2,18 +2,30 @@ import CreateRecipeForm from "@/components/CreateRecipeForm"
 import Head from "next/head"
 import { useState } from "react"
 
-export default function Home() {
-  const [recipies, setRecipies] = useState([
+const myRecipe = {
+  name: "pizza",
+  ingredients: [
     {
-      name: "Instant Raman",
+      name: "cheese",
+      amount: 2,
+      unit: "kg",
+    },
+  ],
+  instructions: "",
+}
+
+export default function Home() {
+  const [recipies, setRecipies]: any = useState([
+    {
+      name: "pizza",
       ingredients: [
         {
-          name: "ramen",
-          amount: 1,
+          name: "cheese",
+          amount: 2,
           unit: "kg",
         },
       ],
-      instructions: "Hello World",
+      instructions: "",
     },
   ])
 
@@ -32,10 +44,10 @@ export default function Home() {
         </header>
 
         <section className='max-w-5xl m-auto my-4 h-full flex gap-4'>
-          <CreateRecipeForm />
+          <CreateRecipeForm setRecipies={setRecipies} recipies={recipies} />
 
           <section id='recipies'>
-            {recipies.map((r, i) => {
+            {recipies.map((r: any, i: any) => {
               return (
                 <div key={i}>
                   <h1>{r.name}</h1>

@@ -1,19 +1,33 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 
-const CreateRecipeForm = () => {
-  const [ingredients, setIngredients] = useState([])
+const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
+  const [ingredients, setIngredients]: any = useState([])
+
+  const recipeName: any = useRef()
+  const instructions: any = useRef()
+
+  const createRecipeHandler = (e: any) => {
+    e.preventDefault()
+
+    const newRecipe = {
+      name: recipeName.current.value,
+      ingredients,
+      instructions: instructions.current.value,
+    }
+
+    setRecipies((prev: any) => [...prev, newRecipe])
+    console.log(recipies)
+  }
+
+  const removeIngredient = (e: any) => {}
 
   return (
     <div className='bg-primary text-primary-content flex flex-col p-2 max-w-md rounded-xl w-1/2'>
       <h2 className='text-xl font-bold mb-4'>Create Recipe</h2>
 
-      <form
+      <div
         id='createRecipeForm'
-        className='flex flex-col justify-between h-full gap-8'
-        onSubmit={(event) => {
-          event.preventDefault()
-          console.log("Submit")
-        }}>
+        className='flex flex-col justify-between h-full gap-8'>
         <section>
           <div className='form-control'>
             <label className='input-group'>
@@ -30,21 +44,47 @@ const CreateRecipeForm = () => {
               <input
                 type='text'
                 placeholder='Recipe Name'
-                className='input w-full text-primary'
+                className='input w-full text-neutral'
+                ref={recipeName}
               />
             </label>
           </div>
 
           <div id='ingredients' className='my-4'>
             <h3 className='text-lg font-bold mb-2'>Ingredients</h3>
-            <IngredientInput />
+            <IngredientInput setIngredients={setIngredients} />
 
             <section className='h-10 mt-5'>
               {ingredients.length === 0 && (
                 <p className='opacity-90'>No ingredients added...</p>
               )}
 
-              {ingredients.length > 0 && <p>Oi</p>}
+              {ingredients.length > 0 &&
+                ingredients.map((i: any, key: number) => {
+                  return (
+                    <div key={key} className='badge w-fit p-4 flex gap-4'>
+                      {i.name}
+
+                      <button
+                        onClick={removeIngredient}
+                        className='btn btn-circle btn-xs'>
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          className='h-6 w-6'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          stroke='currentColor'>
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth='2'
+                            d='M6 18L18 6M6 6l12 12'
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  )
+                })}
             </section>
           </div>
 
@@ -53,21 +93,38 @@ const CreateRecipeForm = () => {
           <div id='instructions' className=''>
             <div className='form-control'>
               <textarea
-                className='textarea textarea-bordered h-24 resize-none overflow-auto'
+                ref={instructions}
+                className='textarea textarea-bordered h-24 resize-none overflow-auto text-neutral'
                 placeholder='Cooking Instructions'></textarea>
             </div>
           </div>
         </section>
 
-        <input type='submit' value='Create Recipe' className='btn' />
-      </form>
+        <button type='submit' className='btn' onClick={createRecipeHandler}>
+          Create Recipe
+        </button>
+      </div>
     </div>
   )
 }
 
 export default CreateRecipeForm
 
-const IngredientInput = () => {
+const IngredientInput = ({ setIngredients }: any) => {
+  const ingredientName: any = useRef()
+  const ingredientAmount: any = useRef()
+  const ingredientUnit: any = useRef()
+
+  const createIngredient = () =>
+    setIngredients((prev: any) => [
+      ...prev,
+      {
+        name: ingredientName.current.value,
+        amount: ingredientAmount.current.value,
+        unit: ingredientUnit.current.value,
+      },
+    ])
+
   return (
     <div className='bg-base-300 rounded-lg flex text-neutral w-full'>
       <section className='p-2 w-full flex flex-col gap-2'>
@@ -76,6 +133,7 @@ const IngredientInput = () => {
             type='text'
             placeholder='Ingredient'
             className='input input-bordered input-sm w-full'
+            ref={ingredientName}
           />
         </div>
 
@@ -85,24 +143,30 @@ const IngredientInput = () => {
             className='input w-full border input-xs'
             step={0.1}
             placeholder='0'
+            ref={ingredientAmount}
           />
 
           <div className='divider h-0 m-0'></div>
 
-          <select className='select select-xs w-full'>
-            <option disabled selected>
+          <select
+            defaultValue={"unit"}
+            className='select select-xs w-full'
+            ref={ingredientUnit}
+            onChange={(event) => {}}>
+            <option value={"unit"} disabled>
               Unit
             </option>
-            <option>litres (L)</option>
-            <option>milliliteres (mL)</option>
-            <option>grams (g)</option>
-            <option>kilograms (kg)</option>
-            <option>pounds (lbs)</option>
+            <option value='L'>litres (L)</option>
+            <option value={"mL"}>milliliteres (mL)</option>
+            <option value={"g"}>grams (g)</option>
+            <option value={"kg"}>kilograms (kg)</option>
+            <option value={"lbs"}>pounds (lbs)</option>
           </select>
         </div>
       </section>
 
       <button
+        onClick={createIngredient}
         type='button'
         className='btn-success w-10 rounded-r-md text-xl hover:bg-[#32C18C]'>
         +
