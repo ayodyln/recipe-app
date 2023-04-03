@@ -25,8 +25,10 @@ const Recipe = ({ recipe, recipies, setRecipies }: any) => {
     setEdit(!edit)
 
     const recipieCopy = recipies.slice()
-    const found = recipieCopy.find((r) => r.id === e.target.id * 1)
-    found.ingredients = found.ingredients.filter((i) => i.name)
+    const found = recipieCopy.find(
+      (r: { id: number }) => r.id === e.target.id * 1
+    )
+    found.ingredients = found.ingredients.filter((i: { name: any }) => i.name)
 
     setRecipies((prev: any) => {
       return prev
@@ -41,25 +43,33 @@ const Recipe = ({ recipe, recipies, setRecipies }: any) => {
     ])
   }
 
-  const newIngredient = (e) => {
+  const newIngredient = (e: any) => {
     const copy = recipies.slice()
-    const found = copy.find((r) => r.id === e.target.id * 1)
+    const found = copy.find((r: { id: number }) => r.id === e.target.id * 1)
     found.ingredients = [
       ...found.ingredients,
       { name: "", amount: 0, unit: "unit" },
     ]
-    setRecipies([...recipies.filter((r) => r.id !== e.target.id * 1), found])
+    setRecipies([
+      ...recipies.filter((r: { id: number }) => r.id !== e.target.id * 1),
+      found,
+    ])
   }
 
   const deleteIng = (e: any) => {
     e.stopPropagation()
 
     setRecipies((prev: any) => {
-      const [found] = prev.filter((r, i) => r.id === e.target.id * 1)
-      found.ingredients = found.ingredients.filter(
-        (i, key) => key !== e.target.dataset.id * 1
+      const [found] = prev.filter(
+        (r: { id: number }, i: any) => r.id === e.target.id * 1
       )
-      return [...prev.filter((r, i) => r.id !== e.target.id * 1), found]
+      found.ingredients = found.ingredients.filter(
+        (i: any, key: number) => key !== e.target.dataset.id * 1
+      )
+      return [
+        ...prev.filter((r: { id: number }, i: any) => r.id !== e.target.id * 1),
+        found,
+      ]
     })
   }
 
