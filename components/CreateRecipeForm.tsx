@@ -7,6 +7,17 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
   const instructions: any = useRef()
 
   const createRecipeHandler = () => {
+    if (
+      !recipeName.current.value ||
+      !instructions.current.value ||
+      ingredients.length < 1
+    ) {
+      console.error(
+        "Please create a Recipe Name, Ingredients, and Instructions"
+      )
+      return
+    }
+
     setRecipies((prev: any) => {
       return [
         ...prev,
@@ -15,16 +26,15 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
           name: recipeName.current.value,
           ingredients,
           instructions: instructions.current.value,
+          fav: false,
         },
       ]
     })
   }
 
   const removeIngredient = (e: any) => {
-    console.log(ingredients)
     setIngredients((prev: any) => {
       if (prev.length === 1) {
-        console.log("single")
         return []
       } else if (prev.length > 1) {
         return [
@@ -37,7 +47,7 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
   }
 
   return (
-    <div className='bg-primary text-primary-content flex flex-col p-2 max-w-md rounded-xl w-1/2'>
+    <div className='bg-primary text-primary-content flex flex-col p-2 max-w-md rounded-xl w-full'>
       <h2 className='text-xl font-bold mb-4'>Create Recipe</h2>
 
       <div

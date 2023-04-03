@@ -1,4 +1,5 @@
 import CreateRecipeForm from "@/components/CreateRecipeForm"
+import Recipe from "@/components/Recipe"
 import Head from "next/head"
 import { useEffect, useState } from "react"
 
@@ -13,16 +14,40 @@ export default function Home() {
           amount: 2,
           unit: "kg",
         },
+        {
+          name: "pepperoni",
+          amount: 2,
+          unit: "kg",
+        },
+        {
+          name: "pepperoni",
+          amount: 2,
+          unit: "kg",
+        },
+        {
+          name: "pepperoni",
+          amount: 2,
+          unit: "kg",
+        },
+        {
+          name: "pepperoni",
+          amount: 2,
+          unit: "kg",
+        },
+        {
+          name: "pepperoni",
+          amount: 2,
+          unit: "kg",
+        },
       ],
-      instructions: "",
+      instructions:
+        "What the crap dude! This is pizza\nHello World! Dude is this really what you are doing with this keyboard? Typing out this text?\nWhy would you use breaks here with some text, why not use a orem impusm generator?\nWhy would you do this to test it like this man.",
+      fav: false,
     },
   ])
 
   useEffect(() => {
     console.log(recipies)
-    recipies.forEach((r) => {
-      // console.log(r.instructions.split('\n'))
-    })
   }, [recipies])
 
   return (
@@ -34,7 +59,7 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <main className=''>
+      <main className='antialiased'>
         <header className='p-3 text-2xl bg-primary text-primary-content'>
           <h1>ReactJS Recipe App</h1>
         </header>
@@ -42,14 +67,16 @@ export default function Home() {
         <section className='max-w-5xl m-auto my-4 h-full flex gap-4'>
           <CreateRecipeForm setRecipies={setRecipies} recipies={recipies} />
 
-          <section id='recipies'>
-            {recipies.map((r: any, i: any) => {
-              return (
-                <div key={i}>
-                  <h1>{r.name}</h1>
-                </div>
-              )
-            })}
+          <section id='recipies' className='w-full'>
+            <h2 className='text-3xl font-bold mb-2'>Recipes</h2>
+
+            <div className='flex flex-col gap-2'>
+              {recipies.map((recipe: any, i: any) => {
+                return (
+                  <Recipe key={i} recipe={recipe} setRecipies={setRecipies} />
+                )
+              })}
+            </div>
           </section>
         </section>
       </main>
@@ -57,9 +84,6 @@ export default function Home() {
   )
 }
 
-// User should be able to view recipes
-// User should be able to add recipes
 // User should be able to edit recipes
 // User should be able to delete recipes
-// User should be able to favorite recipes
 // App should be hosted live
