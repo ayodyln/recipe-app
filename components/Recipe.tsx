@@ -100,7 +100,19 @@ const Recipe = ({ recipe, recipies, setRecipies }: any) => {
         className={`modal ${modal ? "modal-open" : null}`}>
         <div id='modalBox' className='modal-box w-11/12 max-w-5xl'>
           <div className='flex flex-col gap-4'>
-            <h2 className='capitalize text-4xl font-bold'>{recipe.name}</h2>
+            <h2 className='capitalize text-4xl font-bold'>
+              {!edit && recipe.name}
+              {edit && (
+                <input
+                  type='text'
+                  className='input w-full capitalize input-sm border border-accent'
+                  onChange={(e) => {
+                    recipe.name = e.target.value
+                  }}
+                  defaultValue={recipe.name}
+                />
+              )}
+            </h2>
 
             <div className='border rounded-xl overflow-hidden flex items-center h-80 gap-4'>
               <div className='overflow-auto w-1/2 h-full border'>
