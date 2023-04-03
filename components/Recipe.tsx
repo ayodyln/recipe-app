@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Recipe = ({ recipe, setRecipies }: any) => {
+const Recipe = ({ recipe, recipies, setRecipies }: any) => {
   const [modal, setModal]: any = useState()
   const [fav, setFav] = useState(recipe.fav)
   const [edit, setEdit] = useState(false)
@@ -15,18 +15,52 @@ const Recipe = ({ recipe, setRecipies }: any) => {
   }
 
   const modalHandler = (e: any) => {
-    if (
-      e.target.id === "render" ||
-      e.target.id === "close"
-    ) {
+    if (e.target.id === "render" || e.target.id === "close") {
       setModal(!modal)
       setEdit(false)
     }
   }
 
-  const editHandler = () => {
-    console.log("edit")
+  const editHandler = (e: any) => {
     setEdit(!edit)
+
+    const recipieCopy = recipies.slice()
+    const found = recipieCopy.find((r) => r.id === e.target.id * 1)
+    found.ingredients = found.ingredients.filter((i) => i.name)
+
+    setRecipies((prev: any) => {
+      return prev
+    })
+  }
+
+  const deleteRecipe = (e: any) => {
+    setRecipies((prev: any) => [
+      ...prev.filter(
+        (r: { id: number }, i: any) => e.target.dataset.id * 1 !== r.id
+      ),
+    ])
+  }
+
+  const newIngredient = (e) => {
+    const copy = recipies.slice()
+    const found = copy.find((r) => r.id === e.target.id * 1)
+    found.ingredients = [
+      ...found.ingredients,
+      { name: "", amount: 0, unit: "unit" },
+    ]
+    setRecipies([...recipies.filter((r) => r.id !== e.target.id * 1), found])
+  }
+
+  const deleteIng = (e: any) => {
+    e.stopPropagation()
+
+    setRecipies((prev: any) => {
+      const [found] = prev.filter((r, i) => r.id === e.target.id * 1)
+      found.ingredients = found.ingredients.filter(
+        (i, key) => key !== e.target.dataset.id * 1
+      )
+      return [...prev.filter((r, i) => r.id !== e.target.id * 1), found]
+    })
   }
 
   return (
@@ -34,7 +68,7 @@ const Recipe = ({ recipe, setRecipies }: any) => {
       <div
         onClick={modalHandler}
         id='render'
-        className='bg-primary text-primary-content rounded-lg p-4 shadow-xl flex justify-between items-center'>
+        className='cursor-pointer hover:ring bg-primary text-primary-content rounded-lg p-4 shadow-xl flex justify-between items-center'>
         <h2 className='text-4xl font-bold capitalize'>{recipe.name}</h2>
 
         <button id='favButton' className='w-10' onClick={favHandler}>
@@ -58,13 +92,12 @@ const Recipe = ({ recipe, setRecipies }: any) => {
           <div className='flex flex-col gap-4'>
             <h2 className='capitalize text-4xl font-bold'>{recipe.name}</h2>
 
-            <div className='border rounded-xl overflow-hidden flex items-center h-80 gap-2'>
-              <div className='overflow-auto w-2/3 h-full border'>
+            <div className='border rounded-xl overflow-hidden flex items-center h-80 gap-4'>
+              <div className='overflow-auto w-1/2 h-full border'>
                 <table className='table w-full'>
                   {/* head */}
                   <thead>
                     <tr>
-                      <th></th>
                       <th>Ingredient</th>
                       <th>Measurment</th>
                       <th></th>
@@ -72,48 +105,134 @@ const Recipe = ({ recipe, setRecipies }: any) => {
                   </thead>
 
                   <tbody>
-                    {recipe.ingredients.map((i: any, key: any) => {
+                    {recipe.ingredients.map((i: any, key: any, arr: any[]) => {
                       return (
-                        <tr key={key}>
-                          <th>
-                            <label>
-                              <input type='checkbox' className='checkbox' />
-                            </label>
-                          </th>
+                        <tr key={key} className=''>
+                          <td className='capitalize'>
+                            {!edit && i.name}
+                            {edit && (
+                              <input
+                                type='text'
+                                data-id={key}
+                                defaultValue={i.name}
+                                className='input w-full capitalize input-sm border border-accent'
+                                onChange={(e) => {
+                                  i.name = e.target.value
+                                }}
+                              />
+                            )}
+                          </td>
 
-                          <td>{i.name}</td>
-
                           <th>
-                            {i.amount} {i.unit}
+                            {!edit && `${i.amount} ${i.unit}`}
+                            {edit && (
+                              <div className='flex items-center'>
+                                <section className='bg-base-100 rounded-lg w-full border'>
+                                  <input
+                                    type='number'
+                                    className='input w-full border input-xs '
+                                    step={0.1}
+                                    defaultValue={i.amount}
+                                    onChange={(e) => {
+                                      i.amount = e.target.value
+                                    }}
+                                  />
+
+                                  <div className='divider h-0 m-0 my-1'></div>
+
+                                  <select
+                                    defaultValue={`${i.unit}`}
+                                    className='select select-xs w-full'
+                                    onChange={(e) => {
+                                      i.unit = e.target.value
+                                    }}>
+                                    <option value={"unit"} disabled>
+                                      Unit
+                                    </option>
+                                    <option value='L'>litres (L)</option>
+                                    <option value={"mL"}>
+                                      milliliteres (mL)
+                                    </option>
+                                    <option value={"g"}>grams (g)</option>
+                                    <option value={"kg"}>kilograms (kg)</option>
+                                    <option value={"lbs"}>pounds (lbs)</option>
+                                  </select>
+                                </section>
+
+                                <button
+                                  onClick={deleteIng}
+                                  id={recipe.id}
+                                  data-id={key}
+                                  className='btn btn-error ml-4'>
+                                  X
+                                </button>
+                              </div>
+                            )}
                           </th>
                         </tr>
                       )
                     })}
                   </tbody>
                 </table>
+                {edit && (
+                  <button
+                    id={recipe.id}
+                    onClick={newIngredient}
+                    className='btn m-2'>
+                    New Ingredient
+                  </button>
+                )}
               </div>
 
-              <div className='w-1/3 h-full flex flex-col'>
+              <div className='w-1/2 p-1 h-full flex flex-col'>
                 <h2 className='text-xl font-bold'>Instructions</h2>
 
                 <div className='divider m-0'></div>
 
-                <section className='overflow-auto h-full'>
-                  {recipe.instructions
-                    .split("\n")
-                    .map((str: string, key: number) => {
-                      return <p key={key}>{str}</p>
-                    })}
+                <section className={`${!edit && "overflow-auto"} h-full flex`}>
+                  <div>
+                    {!edit &&
+                      recipe.instructions
+                        .split("\n")
+                        .map((str: string, key: number) => {
+                          return <p key={key}>{str}</p>
+                        })}
+                  </div>
+
+                  {edit && (
+                    <textarea
+                      defaultValue={recipe.instructions}
+                      onChange={(e) => (recipe.instructions = e.target.value)}
+                      className={`textarea ${
+                        edit && "textarea-success"
+                      } overflow-auto resize-none w-full h-full`}
+                      placeholder='Bio'></textarea>
+                  )}
                 </section>
               </div>
             </div>
           </div>
           <div className='modal-action'>
-            <button className='btn' onClick={editHandler}>
+            {edit && (
+              <button
+                data-id={recipe.id}
+                onClick={deleteRecipe}
+                className='btn btn-error'>
+                Delete
+              </button>
+            )}
+
+            <button
+              className={`btn ${!edit ? null : "btn-success"}`}
+              id={recipe.id}
+              onClick={editHandler}>
               {!edit ? "Edit" : "Save"}
             </button>
 
-            <button id='close' className={`btn ${edit && 'btn-disabled'}`} onClick={modalHandler}>
+            <button
+              id='close'
+              className={`btn ${edit && "btn-disabled"}`}
+              onClick={modalHandler}>
               close
             </button>
           </div>

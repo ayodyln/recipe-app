@@ -30,6 +30,7 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
         },
       ]
     })
+    setIngredients([])
   }
 
   const removeIngredient = (e: any) => {
@@ -131,7 +132,14 @@ const CreateRecipeForm = ({ setRecipies, recipies }: any) => {
           </div>
         </section>
 
-        <button type='submit' className='btn' onClick={createRecipeHandler}>
+        <button
+          type='submit'
+          className='btn'
+          onClick={() => {
+            createRecipeHandler()
+            recipeName.current.value = ""
+            instructions.current.value = ""
+          }}>
           Create Recipe
         </button>
       </div>

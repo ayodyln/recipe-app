@@ -19,36 +19,12 @@ export default function Home() {
           amount: 2,
           unit: "kg",
         },
-        {
-          name: "pepperoni",
-          amount: 2,
-          unit: "kg",
-        },
-        {
-          name: "pepperoni",
-          amount: 2,
-          unit: "kg",
-        },
-        {
-          name: "pepperoni",
-          amount: 2,
-          unit: "kg",
-        },
-        {
-          name: "pepperoni",
-          amount: 2,
-          unit: "kg",
-        },
       ],
       instructions:
         "What the crap dude! This is pizza\nHello World! Dude is this really what you are doing with this keyboard? Typing out this text?\nWhy would you use breaks here with some text, why not use a orem impusm generator?\nWhy would you do this to test it like this man.",
       fav: false,
     },
   ])
-
-  useEffect(() => {
-    console.log(recipies)
-  }, [recipies])
 
   return (
     <>
@@ -73,7 +49,7 @@ export default function Home() {
             <div className='flex flex-col gap-2'>
               {recipies.map((recipe: any, i: any) => {
                 return (
-                  <Recipe key={i} recipe={recipe} setRecipies={setRecipies} />
+                  <Recipe key={i} recipe={recipe} recipies={recipies} setRecipies={setRecipies} />
                 )
               })}
             </div>
@@ -83,7 +59,3 @@ export default function Home() {
     </>
   )
 }
-
-// User should be able to edit recipes
-// User should be able to delete recipes
-// App should be hosted live
